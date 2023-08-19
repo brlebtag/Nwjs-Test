@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>Deterministic Locksteps</title>
+    </head>
+    <script src="/scripts/phaser-3.60.0.min.js"></script>
+    <script src="/scripts/BasePhaser.js"></script>
+    <script src="/scripts/BasicHeroKeys.js"></script>
+    <script src="/scripts/circular-array.js"></script>
+    <script>
+        class GameScene extends Phaser.Scene {
+            constructor() {
+                const config = {
+                    key: "game",
+                    active: false,
+                    visible: false,
+                };
+
+                super(config);
+            }
+
+            create() {
+                this._inputs = new KeyboardInputs(this);
+                this.map = this.make.tilemap({ key: "tilemap" });
+                const tileset = this.map.addTilesetImage("tileset");
+                this.map.createLayer('Floor', tileset);
+                let obstaclesLayer = this.map.createLayer('Obstacles', tileset);
+        
+                obstaclesLayer.forEachTile(tile => {
+                    if (tile?.properties?.Obstacle) {
+                        tile.setCollision(true);
+                    }
+                });
+
+                const { widthInPixels, heightInPixels } = this.map;
+                this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
+                this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels);
+                this.obstaclesLayer = obstaclesLayer;
+                this.hero = new Hero(this, 50, 50, 'Bruno');
+                this.cameras.main.startFollow(this.hero, true);
+                this.physics.add.collider(this.hero, obstaclesLayer);
+            }
+
+            update(time, delta) {
+                this.hero.update(time, delta);
+            }
+
+            get inputs() {
+                return this._inputs;
+            }
+        }
+
+        const config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth - 9,
+            height: window.innerHeight - 9,
+            parent: "game",
+            zoom: 1,
+            autoCenter: Phaser.Scale.Center.CENTER_BOTH,
+            input: {
+                keyboard: true,
+                gamepad: true,
+            },
+            render: {
+                pixelArt: true,
+                antialias: false,
+                antialiasGL: false,
+            },
+            physics: {
+                default: "arcade",
+                arcade: {
+                    debug: false,
+                },
+            },
+            scene: [LoaderScene, GameScene],
+        };
+
+        const game = new Phaser.Game(config);
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <body>
+        <div id="game"></div>
+    </body>
+</html>
