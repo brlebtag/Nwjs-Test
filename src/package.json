@@ -1,0 +1,24 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "views/index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "chromium-args": "--enable-logging=stderr",
+  "window": {
+    "title": "Deterministic Locksteps",
+    "toolbar": false,
+    "width": 800,
+    "height": 600,
+    "min_width": 800,
+    "min_height": 600,
+    "max_width": 800,
+    "max_height": 600,
+    "position": "center"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
