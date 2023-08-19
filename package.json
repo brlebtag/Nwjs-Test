@@ -1,0 +1,17 @@
+{
+  "name": "nwtest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nw src/",
+    "prod": "nwbuild --patforms win32, win64 --buildDir dist/ src/"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nw": "^0.78.1",
+    "nw-builder": "^4.3.9"
+  }
+}
