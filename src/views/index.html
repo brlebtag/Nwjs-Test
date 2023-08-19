@@ -42,23 +42,102 @@
             padding: 5px;
         }
     </style>
+    <script>
+        let startServerBtn;
+        let connectServerBtn;
+
+        function getValue(id) {
+            return document.getElementById(id).value;
+        }
+
+        function onloaded() {
+            startServerBtn = document.getElementById('startServerBtn');
+            connectServerBtn = document.getElementById('connectServerBtn');
+            startServerBtn.addEventListener('click', startServer);
+            connectServerBtn.addEventListener('click', connectServer);
+        }
+
+        function startServer(e) {
+            e.preventDefault();
+            e.stopPropagation();
+           
+            let ip = getValue('ip');
+            let tcpPort = getValue('tcp_port');
+            let udpPort = getValue('udp_port');
+
+            if (ip == '') {
+                alert('You must inform IP');
+                return false;
+            }
+
+            if (tcpPort == '') {
+                alert('You must inform TCP Port');
+                return false;
+            }
+
+            if (udpPort == '') {
+                alert('You must inform UDP Port');
+                return false;
+            }
+
+            localStorage['ip'] = ip;
+            localStorage['tcpPort'] = tcpPort;
+            localStorage['udpPort'] = udpPort;
+            
+            window.location.href = './DeterministicLocksteps.html';
+            return true;
+        }
+
+        function connectServer(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            let ip = getValue('ip');
+            let tcpPort = getValue('tcp_port');
+            let udpPort = getValue('udp_port');
+
+            if (ip == '') {
+                alert('You must inform IP');
+                return false;
+            }
+
+            if (tcpPort == '') {
+                alert('You must inform TCP Port');
+                return false;
+            }
+
+            if (udpPort == '') {
+                alert('You must inform UDP Port');
+                return false;
+            }
+
+            localStorage['ip'] = ip;
+            localStorage['tcpPort'] = tcpPort;
+            localStorage['udpPort'] = udpPort;
+
+            window.location.href = './DeterministicLocksteps.html';
+            return true;
+        }
+
+        window.addEventListener('load', onloaded);
+    </script>
     <body>
         <div class="panel">
             <div class="form-input">
                 <label>IP:</label>
-                <input type="text">
+                <input id="ip" type="text">
             </div>
             <div class="form-input">
                 <label>TCP Port:</label>
-                <input type="text">
+                <input id="tcp_port" type="text">
             </div>
             <div class="form-input">
                 <label>UDP Port:</label>
-                <input type="text">
+                <input id="udp_port" type="text">
             </div>
             <div class="form-button">
-                <button type="button">Start Server</button>
-                <button type="button">Connect to Server</button>
+                <button id="startServerBtn" type="button">Start Server</button>
+                <button id="connectServerBtn" type="button">Connect to Server</button>
             </div>
         </div>
     </body>
