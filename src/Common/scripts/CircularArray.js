@@ -43,7 +43,6 @@ class CircularArray {
     skipBack(num) {
         num = Math.min(num, this._total);
         if (num <= 0) return;
-
         const storage = this._storage;
         const capacity = this._capacity;
         let n, i = this._end - 1;

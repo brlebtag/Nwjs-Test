@@ -177,10 +177,48 @@ function readAscii(cursor) {
     return String.fromCharCode(char);
 }
 
+// https://stackoverflow.com/questions/47981/how-to-set-clear-and-toggle-a-single-bit
+
 function cursorSize(cursor) {
     return cursor.data.byteLength * 8;
 }
 
 function cursorUsedSize(cursor) {
     return cursor.bytes * 8 + (8 - cursor.bits);
+}
+
+function setBit(value, bitNum) {
+    return value | 1 << bitNum;
+}
+
+function clearBit(value, bitNum) {
+    return value & ~(1 << bitNum);
+}
+
+function flipBit(value, bitNum) {
+    return value ^ (1 << bitNum);
+}
+
+function checkBit(value, bitNum) {
+    return !!(value & (1 << bitNum));
+}
+
+function bitmaskSet(value, mask) {
+    return value |= mask;
+}
+
+function bitmaskClear(value, mask) {
+    return value & (~mask);
+}
+
+function bitmaskFlip(value, mask) {
+    return value ^ mask;
+}
+
+function bitmaskCleckAll(value, mask) {
+    return !((~value) & mask);
+}
+
+function bitmaskCheckAny(value, mask) {
+    return x & mask;
 }

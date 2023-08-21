@@ -83,8 +83,9 @@
             localStorage['ip'] = ip;
             localStorage['tcpPort'] = tcpPort;
             localStorage['udpPort'] = udpPort;
+            localStorage['isServer'] = true;
             
-            window.location.href = './DeterministicLocksteps.html';
+            window.location.href = './DeterministicLocksteps/index.html';
             return true;
         }
 
@@ -114,8 +115,9 @@
             localStorage['ip'] = ip;
             localStorage['tcpPort'] = tcpPort;
             localStorage['udpPort'] = udpPort;
+            localStorage['isServer'] = false;
 
-            window.location.href = './DeterministicLocksteps.html';
+            window.location.href = './DeterministicLocksteps/index.html';
             return true;
         }
 
@@ -125,15 +127,15 @@
         <div class="panel">
             <div class="form-input">
                 <label>IP:</label>
-                <input id="ip" type="text">
+                <input id="ip" type="text" value="0.0.0.0">
             </div>
             <div class="form-input">
                 <label>TCP Port:</label>
-                <input id="tcp_port" type="text">
+                <input id="tcp_port" type="text" value="558888">
             </div>
             <div class="form-input">
                 <label>UDP Port:</label>
-                <input id="udp_port" type="text">
+                <input id="udp_port" type="text" value="558888">
             </div>
             <div class="form-button">
                 <button id="startServerBtn" type="button">Start Server</button>
