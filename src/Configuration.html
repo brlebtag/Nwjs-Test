@@ -43,6 +43,8 @@
         }
     </style>
     <script>
+        nw.App.on('open', (args) => nw.Window.open("/Configuration.html", {new_instance: true, mixed_context: false}));
+
         let startServerBtn;
         let connectServerBtn;
 
