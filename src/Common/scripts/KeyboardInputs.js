@@ -90,7 +90,7 @@ class KeyboardInputs {
         return {
             left: this.left,
             right: this.right,
-            top: this.top,
+            up: this.up,
             down: this.down,
             shift: this.shift,
             space: this.space,

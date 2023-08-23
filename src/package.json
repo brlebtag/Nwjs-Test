@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "chromium-args": "--enable-logging=stderr",
+  "chromium-args": "--enable-logging=stderr  --disable-features=ProcessPerSiteUpToMainFrameThreshold",
   "window": {
     "title": "Deterministic Locksteps",
     "toolbar": false,
@@ -16,7 +16,8 @@
     "min_height": 600,
     "max_width": 800,
     "max_height": 600,
-    "position": "center"
+    "position": "center",
+    "single-instance": false
   },
   "keywords": [],
   "author": "",

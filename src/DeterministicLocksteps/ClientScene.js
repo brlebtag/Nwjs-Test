@@ -1,7 +1,3 @@
-const net = require('node:net');
-const dgram = require('node:dgram');
-const { Buffer } = require('node:buffer');
-
 /**
  * ClientScene plays the simulation
  */
@@ -23,6 +19,8 @@ class ClientScene extends Phaser.Scene {
     }
 
     create() {
+        console.log(`ClientScene`);
+        document.title = "Deterministic Locksteps - Client";
         this._inputs = new CommandInputs(this);
         this.map = this.make.tilemap({ key: "tilemap" });
         const tileset = this.map.addTilesetImage("tileset");
@@ -120,10 +118,14 @@ class ClientScene extends Phaser.Scene {
 
     connectToServer() {
         const hostname = localStorage['ip'];
-        const tcpPort = localStorage['tcpPort'];
-        const udpPort = localStorage['udpPort'];
+        const tcpPort = parseInt(localStorage['tcpPort']);
+        const udpPort = parseInt(localStorage['udpPort']);
 
         const udpClient = this.udpClient = dgram.createSocket('udp4');
+
+        udpClient.on('connect', () => {
+            console.log('udp client connect');
+        });
 
         udpClient.on('message', (msg, rinfo) => {
             this.processData(msg);
@@ -143,6 +145,10 @@ class ClientScene extends Phaser.Scene {
         const tcpClient = this.tcpClient = net.Socket();
 
         tcpClient.connect({ port: tcpPort, host: hostname, noDelay: false });
+
+        tcpClient.on('ready', () => {
+            console.log('tcp socket ready!');
+        });
 
         tcpClient.on('close', () => {
             this.tcpClient = undefined;

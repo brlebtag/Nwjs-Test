@@ -14,12 +14,19 @@
     <script src="../Common/scripts/LoadScene.js"></script>
     <script src="../Common/scripts/Hero.js"></script>
     <script src="./Common.js"></script>
+    <script>
+        const net = require('node:net');
+        const dgram = require('node:dgram');
+        const { Buffer } = require('node:buffer');
+        const hostname = localStorage['ip'];
+        const tcpPort = parseInt(localStorage['tcpPort']);
+        const udpPort = parseInt(localStorage['udpPort']);
+        const isServer = parseInt(localStorage['isServer']) == 1;
+    </script>
     <script src="./ServerScene.js"></script>
     <script src="./ClientScene.js"></script>
     <script>
-        const isServer = localStorage['isServer'];
-
-        if (isServer == undefined) {
+        if (localStorage['isServer'] == undefined) {
             document.getElementById("game").innerText = "`isServer` Key is not defined!";
         } else {
             const config = {

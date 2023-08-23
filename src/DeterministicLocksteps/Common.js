@@ -10,13 +10,15 @@ function serializeCommands(commands, buffer, maxSize = MaxUdpPacketSize) {
 
     let first = commands.at(0);
 
+    console.log(first);
+
     buffer.writeInt32BE(first.id, 4);
 
     buffer.writeUInt8(cmdToByte(first), 8);
 
     let totalBytes = 9; // len(32-bits = 4 bytes) + first's Id (32-bits = 4 bytes) + first's command (1 byte)
 
-    for (let i = 1; (i < len) || (totalBytes < MaxUdpPacketSize); i++, totalBytes++) {
+    for (let i = 1; (i < len) && (totalBytes < maxSize); i++, totalBytes++) {
         buffer.writeUInt8(cmdToByte(commands.at(i)), totalBytes);
     }
 

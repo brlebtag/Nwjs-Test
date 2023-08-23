@@ -1,7 +1,3 @@
-const net = require('node:net');
-const dgram = require('node:dgram');
-const { Buffer } = require('node:buffer');
-
 /**
  * Server Scene streams the simulation
  */
@@ -21,6 +17,8 @@ class ServerScene extends Phaser.Scene {
     }
 
     create() {
+        console.log(`ServerScene`);
+        document.title = "Deterministic Locksteps - Server";
         this._inputs = new KeyboardInputs(this);
         this.map = this.make.tilemap({ key: "tilemap" });
         const tileset = this.map.addTilesetImage("tileset");
@@ -88,18 +86,14 @@ class ServerScene extends Phaser.Scene {
     sendCommads() {
         let size = serializeCommands(this.commands, this.buffer);
         if (size <= 0) return;
-        this.udpClient.send(this.buffer, 0 , size);
+        this.udpClient.send(this.buffer, 0 , size, udpPort, hostname);
     }
 
     startServer() {
-        const hostname = localStorage['ip'];
-        const tcpPort = localStorage['tcpPort'];
-        const udpPort = localStorage['udpPort'];
-
         const udpClient = this.udpClient = dgram.createSocket('udp4');
 
-        udpClient.on('message', (msg, rinfo) => {
-            this.processData(msg);
+        udpClient.on('connect', () => {
+            console.log('udp client connect');
         });
 
         udpClient.on('error', (err) => {
@@ -109,11 +103,10 @@ class ServerScene extends Phaser.Scene {
         udpClient.on('close', () => {
             this.udpClient = undefined;
             console.log('UDP closed');
-        })
-
-        udpClient.bind(udpPort);
+        });
 
         const tcpServer = this.tcpServer = net.createServer({ noDelay: true }, socket => {
+            socket.setEncoding(null);
             console.log('Client connected');
 
             if (this.tcpClient) {
@@ -128,15 +121,27 @@ class ServerScene extends Phaser.Scene {
             this.senderTimer.paused = false;
             this.tcpClient = socket;
 
+            socket.on('ready', () => {
+                console.log('tcp client socket ready!');
+            });
+
             socket.on('close', () => {
                 this.tcpClient = undefined;
                 this.senderTimer.paused = true;
                 console.log('Client disconnected');
             });
 
+            socket.on('data', data => {
+                this.processData(data);
+            });
+
             socket.on('error', err => {
                 console.log('TCP error: ', err);
             });
+        });
+
+        tcpServer.on('ready', () => {
+            console.log('tcp server socket ready!');
         });
 
         tcpServer.on('close', () => {
