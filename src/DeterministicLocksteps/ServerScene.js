@@ -157,6 +157,6 @@ class ServerScene extends Phaser.Scene {
             console.log('Server TCP disconnected!');
         });
 
-        tcpServer.listen(tcpPort, hostname);
+        tcpServer.listen(port, hostname);
     }
 }

@@ -77,7 +77,7 @@
             }
 
             localStorage['ip'] = ip;
-            localStorage['port'] = tcpPort;
+            localStorage['port'] = port;
             localStorage['isServer'] = 1;
             
             window.location.href = './DeterministicLocksteps/index.html';
@@ -98,11 +98,11 @@
         <div class="panel">
             <div class="form-input">
                 <label>IP:</label>
-                <input id="ip" type="text" value="127.0.0.1">
+                <input id="ip" type="text" value="0.0.0.0">
             </div>
             <div class="form-input">
                 <label>Port:</label>
-                <input id="ip" type="text" value="127.0.0.1">
+                <input id="port" type="text" value="5588">
             </div>
             <div class="form-button">
                 <button id="startServerBtn" type="button">Start Server</button>

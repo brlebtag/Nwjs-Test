@@ -120,10 +120,6 @@ class ClientScene extends Phaser.Scene {
     }
 
     connectToServer() {
-        const hostname = localStorage['ip'];
-        const tcpPort = parseInt(localStorage['tcpPort']);
-        const udpPort = parseInt(localStorage['udpPort']);
-
         const udpClient = this.udpClient = dgram.createSocket('udp4');
 
         udpClient.on('connect', () => {
@@ -145,7 +141,7 @@ class ClientScene extends Phaser.Scene {
 
         const tcpClient = this.tcpClient = net.Socket();
 
-        tcpClient.connect({ port: tcpPort, host: hostname, noDelay: false });
+        tcpClient.connect({ port: port, host: hostname, noDelay: false });
 
         tcpClient.on('ready', () => {
             console.log('tcp socket ready!');
