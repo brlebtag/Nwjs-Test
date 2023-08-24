@@ -25,12 +25,12 @@ function serializeCommands(commands, buffer, maxSize = MaxUdpPacketSize) {
     return totalBytes;
 }
 
-function deserializeCommands(packet) {
-    const size = packet.readInt32BE(0);
+function deserializeCommands(buffer) {
+    const size = buffer.readInt32BE(0);
     let commands = [];
 
     if (size > 0) {
-        const firstID = packet.readInt32BE(4);
+        const firstID = buffer.readInt32BE(4);
         let firstCmd = buffer.readUInt8(totalBytes, 8);
         let totalBytes = 9;
         firstCmd.id = firstID;
