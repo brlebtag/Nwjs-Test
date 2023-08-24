@@ -69,7 +69,7 @@ class ServerScene extends Phaser.Scene {
         return this._inputs;
     }
 
-    processData(data) {
+    processData(data, rinfo) {
         console.log('ack received');
         const commands = this.commands;
         const size = commands.length;
@@ -115,6 +115,10 @@ class ServerScene extends Phaser.Scene {
             console.log('udp client connect');
         });
 
+        udpClient.on('message', (data, rinfo) => {
+            this.processData(data, rinfo);
+        });
+
         udpClient.on('error', (err) => {
             console.log('UDP error: ', err);
         });
@@ -152,10 +156,6 @@ class ServerScene extends Phaser.Scene {
                 this.tcpClient = undefined;
                 this.remoteAddress = null;
                 console.log('Client disconnected');
-            });
-
-            socket.on('data', data => {
-                this.processData(data);
             });
 
             socket.on('error', err => {

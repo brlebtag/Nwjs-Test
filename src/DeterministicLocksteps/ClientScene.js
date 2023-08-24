@@ -57,7 +57,6 @@ class ClientScene extends Phaser.Scene {
                 return;
             }
             this.loopId++;
-            console.log(this.commands);
             const cmd = this.commands.shift(); // remove from front
             if (!cmd || this.loopId != cmd.id) {
                 console.error('Out-of-sync state...', cmd.id, '!=', this.loopId);
@@ -76,7 +75,7 @@ class ClientScene extends Phaser.Scene {
         return this._inputs;
     }
 
-    processData(data) {
+    processData(data, rinfo) {
         try {
             console.log('commands received');
             let commands = deserializeCommands(data);
@@ -151,8 +150,8 @@ class ClientScene extends Phaser.Scene {
             console.log('udp client connect');
         });
 
-        udpClient.on('message', (msg, rinfo) => {
-            this.processData(msg);
+        udpClient.on('message', (data, rinfo) => {
+            this.processData(data, rinfo);
         });
 
         udpClient.on('error', (err) => {
