@@ -49,6 +49,7 @@ class ServerScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.tcpClient) {
+            this.hero.clearTint();
             if (this.commands.full())
             {
                 console.log('commands is full');
@@ -59,7 +60,6 @@ class ServerScene extends Phaser.Scene {
             command.id = this.loopId;
             this.commands.push(command);
             this.hero.update(time, delta);
-            this.hero.clearTint();
         } else {
             this.hero.setTint(0xff0000);
         }

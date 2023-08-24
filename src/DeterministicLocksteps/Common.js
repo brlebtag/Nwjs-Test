@@ -31,9 +31,11 @@ function deserializeCommands(buffer) {
 
     if (size > 0) {
         const firstID = buffer.readInt32BE(4);
-        let firstCmd = buffer.readUInt8(totalBytes, 8);
+        let firstCmd = buffer.readUInt8(8);
         let totalBytes = 9;
         firstCmd.id = firstID;
+
+        commands.push(firstCmd);
     
         for (let i = 1; i < size; i++, totalBytes++) {
             const cmd = byteToCmd(buffer.readUInt8(totalBytes));

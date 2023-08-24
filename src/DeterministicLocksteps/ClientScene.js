@@ -51,21 +51,21 @@ class ClientScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.isConnected) {
-            if (this.commands.empty())
-            {
+            this.hero.clearTint();
+            if (this.commands.empty()) {
                 console.log('commands empty!')
                 return;
             }
             this.loopId++;
+            console.log(this.commands);
             const cmd = this.commands.shift(); // remove from front
-            if (this.loopId != cmd.id) {
-                console.error('Out-of-sync state...');
+            if (!cmd || this.loopId != cmd.id) {
+                console.error('Out-of-sync state...', cmd.id, '!=', this.loopId);
                 this.forceDisconnect();
                 return;
             }
             this.inputs.consume(cmd);
             this.hero.update(time, delta);
-            this.hero.clearTint();
         } else {
             this.hero.setTint(0xff0000);
         }
@@ -116,6 +116,7 @@ class ClientScene extends Phaser.Scene {
     }
 
     initialState() {
+        console.log('initialState');
         this.loopId = 0;
         this.lastConfirmed = -1;
         this.commands.reset();
@@ -179,9 +180,9 @@ class ClientScene extends Phaser.Scene {
 
         tcpClient.on('connect', () => {
             udpClient.bind(tcpClient.address().port, () => {
+                this.initialState();
                 console.log(`udp socket binded`);
             });
-            this.initialState();
         })
     }
 }
