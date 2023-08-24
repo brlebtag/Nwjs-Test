@@ -154,7 +154,9 @@ class ClientScene extends Phaser.Scene {
         });
 
         tcpClient.on('connect', () => {
-            udpClient.bind(tcpClient.address().port);
+            udpClient.bind(tcpClient.address().port, () => {
+                console.log(`udp socket binded`);
+            });
             this.initialState();
         })
     }

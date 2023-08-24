@@ -90,7 +90,7 @@ class ServerScene extends Phaser.Scene {
         const client = this.remoteAddress;
         let size = serializeCommands(this.commands, this.buffer);
         if (size <= 0) return;
-        this.udpClient.send(this.buffer, 0 , size, this, client.port, client.address);
+        this.udpClient.send(this.buffer, 0, size, client.port, client.address);
         console.log('commands sent!');
     }
 
@@ -122,7 +122,7 @@ class ServerScene extends Phaser.Scene {
                 return;
             }
 
-            this.remoteAddress = socket.address();
+            this.remoteAddress = {address: socket.remoteAddress, port: socket.remotePort};
             this.loopId = 0;
             this.commands.reset();
             this.commands.clear();
