@@ -19,8 +19,7 @@
         const dgram = require('node:dgram');
         const { Buffer } = require('node:buffer');
         const hostname = localStorage['ip'];
-        const tcpPort = parseInt(localStorage['tcpPort']);
-        const udpPort = parseInt(localStorage['udpPort']);
+        const port = parseInt(localStorage['port']);
         const isServer = parseInt(localStorage['isServer']) == 1;
     </script>
     <script src="./ServerScene.js"></script>

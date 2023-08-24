@@ -59,68 +59,37 @@
             connectServerBtn.addEventListener('click', connectServer);
         }
 
-        function startServer(e) {
+        function setup(e, isServer) {
             e.preventDefault();
             e.stopPropagation();
            
             let ip = getValue('ip');
-            let tcpPort = getValue('tcp_port');
-            let udpPort = getValue('udp_port');
+            let port = getValue('port');
 
             if (ip == '') {
                 alert('You must inform IP');
                 return false;
             }
 
-            if (tcpPort == '') {
-                alert('You must inform TCP Port');
-                return false;
-            }
-
-            if (udpPort == '') {
-                alert('You must inform UDP Port');
+            if (port == '') {
+                alert('You must inform Port');
                 return false;
             }
 
             localStorage['ip'] = ip;
-            localStorage['tcpPort'] = tcpPort;
-            localStorage['udpPort'] = udpPort;
+            localStorage['port'] = tcpPort;
             localStorage['isServer'] = 1;
             
             window.location.href = './DeterministicLocksteps/index.html';
             return true;
         }
 
+        function startServer(e) {
+            return setup(e, 1);
+        }
+
         function connectServer(e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            let ip = getValue('ip');
-            let tcpPort = getValue('tcp_port');
-            let udpPort = getValue('udp_port');
-
-            if (ip == '') {
-                alert('You must inform IP');
-                return false;
-            }
-
-            if (tcpPort == '') {
-                alert('You must inform TCP Port');
-                return false;
-            }
-
-            if (udpPort == '') {
-                alert('You must inform UDP Port');
-                return false;
-            }
-
-            localStorage['ip'] = ip;
-            localStorage['tcpPort'] = tcpPort;
-            localStorage['udpPort'] = udpPort;
-            localStorage['isServer'] = 0;
-
-            window.location.href = './DeterministicLocksteps/index.html';
-            return true;
+            return setup(e, 0);
         }
 
         window.addEventListener('load', onloaded);
@@ -128,16 +97,12 @@
     <body>
         <div class="panel">
             <div class="form-input">
-                <label>Other's IP:</label>
+                <label>IP:</label>
                 <input id="ip" type="text" value="127.0.0.1">
             </div>
             <div class="form-input">
-                <label>(Mine and Other's) TCP Port:</label>
-                <input id="tcp_port" type="text" value="5588">
-            </div>
-            <div class="form-input">
-                <label>(Mine and Other's) UDP Port:</label>
-                <input id="udp_port" type="text" value="5588">
+                <label>Port:</label>
+                <input id="ip" type="text" value="127.0.0.1">
             </div>
             <div class="form-button">
                 <button id="startServerBtn" type="button">Start Server</button>

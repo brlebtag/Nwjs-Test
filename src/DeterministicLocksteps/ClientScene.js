@@ -89,7 +89,7 @@ class ClientScene extends Phaser.Scene {
 
         this.buffer.writeInt32BE(this.lastConfirmed, 0);
         /* 32-bits = 4 bytes */
-        this.udpClient.send(this.buffer, 0, 4, udpPort, hostname);
+        this.udpClient.send(this.buffer, 0, 4, port, hostname);
         console.log('ack sent!')
     }
 
@@ -143,8 +143,6 @@ class ClientScene extends Phaser.Scene {
             console.log('UDP closed');
         });
 
-        udpClient.bind(udpPort);
-
         const tcpClient = this.tcpClient = net.Socket();
 
         tcpClient.connect({ port: tcpPort, host: hostname, noDelay: false });
@@ -160,6 +158,7 @@ class ClientScene extends Phaser.Scene {
         });
 
         tcpClient.on('connect', () => {
+            udpClient.bind(tcpClient.address().port);
             this.initialState();
         })
     }

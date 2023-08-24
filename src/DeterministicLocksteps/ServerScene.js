@@ -86,9 +86,11 @@ class ServerScene extends Phaser.Scene {
     }
 
     sendCommads() {
+        if (!this.tcpClient) return;
+        const client = this.remoteAddress;
         let size = serializeCommands(this.commands, this.buffer);
         if (size <= 0) return;
-        this.udpClient.send(this.buffer, 0 , size, udpPort, hostname);
+        this.udpClient.send(this.buffer, 0 , size, this, client.port, client.address);
         console.log('commands sent!');
     }
 
@@ -108,7 +110,7 @@ class ServerScene extends Phaser.Scene {
             console.log('UDP closed');
         });
 
-        udpClient.bind(udpPort);
+        udpClient.bind(port);
 
         const tcpServer = this.tcpServer = net.createServer({ noDelay: true }, socket => {
             socket.setEncoding(null);
@@ -120,6 +122,7 @@ class ServerScene extends Phaser.Scene {
                 return;
             }
 
+            this.remoteAddress = socket.address();
             this.loopId = 0;
             this.commands.reset();
             this.commands.clear();
@@ -131,8 +134,9 @@ class ServerScene extends Phaser.Scene {
             });
 
             socket.on('close', () => {
-                this.tcpClient = undefined;
                 this.senderTimer.paused = true;
+                this.tcpClient = undefined;
+                this.remoteAddress = null;
                 console.log('Client disconnected');
             });
 
@@ -153,6 +157,6 @@ class ServerScene extends Phaser.Scene {
             console.log('Server TCP disconnected!');
         });
 
-        tcpServer.listen(tcpPort, '0.0.0.0');
+        tcpServer.listen(tcpPort, hostname);
     }
 }
