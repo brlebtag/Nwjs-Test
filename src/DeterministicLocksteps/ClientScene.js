@@ -51,7 +51,11 @@ class ClientScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.isConnected) {
-            if (this.commands.empty()) return;
+            if (this.commands.empty())
+            {
+                console.log('commands empty!')
+                return;
+            }
             this.loopId++;
             const cmd = this.commands.shift(); // remove from front
             if (this.loopId != cmd.id) {
@@ -73,7 +77,11 @@ class ClientScene extends Phaser.Scene {
         console.log('commands received');
         let commands = deserializeCommands(data);
 
-        if (commands.length <= 0) return;
+        if (commands.length <= 0)
+        {
+            console.log('unable to deserialize!');
+            return;
+        }
 
         for (const cmd of commands) {
             this.commands.push(cmd);
@@ -85,8 +93,11 @@ class ClientScene extends Phaser.Scene {
     }
 
     ackCommands() {
-        if (this.lastConfirmed == -1) return;
-
+        if (this.lastConfirmed == -1)
+        {
+            console.log('no command acked!');
+            return;
+        }
         this.buffer.writeInt32BE(this.lastConfirmed, 0);
         /* 32-bits = 4 bytes */
         this.udpClient.send(this.buffer, 0, 4, port, hostname);
@@ -103,6 +114,8 @@ class ClientScene extends Phaser.Scene {
     }
 
     forceDisconnect() {
+        console.log('force disconnected');
+
         if (this.udpClient) {
             this.udpClient.close();
         }

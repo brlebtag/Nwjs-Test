@@ -49,7 +49,11 @@ class ServerScene extends Phaser.Scene {
 
     update(time, delta) {
         if (this.tcpClient) {
-            if (this.commands.full()) return;
+            if (this.commands.full())
+            {
+                console.log('commands is full');
+                return;
+            }
             this.loopId++;
             let command = this.inputs.command();
             command.id = this.loopId;
@@ -67,12 +71,20 @@ class ServerScene extends Phaser.Scene {
         console.log('ack received');
         const commands = this.commands;
         const size = commands.length;
-        if (size <= 0) return;
+        if (size <= 0) 
+        {
+            console.log('no commands to send');
+            return;
+        }
         const loopId = data.readInt32BE(0); // ACK Id
         const first = commands.front();
         const index = loopId - first.id;
         
-        if (index < 0) return; // Already ACKED. It is from the past or repeated ACK.
+        if (index < 0)
+        {
+            console.log('already acked!')
+            return; // Already ACKED. It is from the past or repeated ACK.
+        }
 
         if (index > size || commands.at(index).id != loopId) {
             this.tcpClient.end();
