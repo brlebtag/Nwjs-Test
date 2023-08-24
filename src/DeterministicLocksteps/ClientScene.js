@@ -65,6 +65,9 @@ class ClientScene extends Phaser.Scene {
             }
             this.inputs.consume(cmd);
             this.hero.update(time, delta);
+            this.hero.clearTint();
+        } else {
+            this.hero.setTint(0xff0000);
         }
         
     }
@@ -74,34 +77,42 @@ class ClientScene extends Phaser.Scene {
     }
 
     processData(data) {
-        console.log('commands received');
-        let commands = deserializeCommands(data);
-
-        if (commands.length <= 0)
-        {
-            console.log('unable to deserialize!');
-            return;
+        try {
+            console.log('commands received');
+            let commands = deserializeCommands(data);
+    
+            if (commands.length <= 0)
+            {
+                console.log('unable to deserialize!');
+                return;
+            }
+    
+            for (const cmd of commands) {
+                this.commands.push(cmd);
+            }
+    
+            const last = commands[commands.length - 1];
+            this.lastConfirmed = last.id;
+            console.log('commands processed');
+        } catch (err) {
+            console.log('processData: ', err);
         }
-
-        for (const cmd of commands) {
-            this.commands.push(cmd);
-        }
-
-        const last = commands[commands.length - 1];
-        this.lastConfirmed = last.id;
-        console.log('commands processed');
     }
 
     ackCommands() {
-        if (this.lastConfirmed == -1)
-        {
-            console.log('no command acked!');
-            return;
+        try {
+            if (this.lastConfirmed == -1)
+            {
+                console.log('no command acked!');
+                return;
+            }
+            this.buffer.writeInt32BE(this.lastConfirmed, 0);
+            /* 32-bits = 4 bytes */
+            this.udpClient.send(this.buffer, 0, 4, port, hostname);
+            console.log('ack sent!')
+        } catch (err) {
+            console.log('ackCommands: ', err)
         }
-        this.buffer.writeInt32BE(this.lastConfirmed, 0);
-        /* 32-bits = 4 bytes */
-        this.udpClient.send(this.buffer, 0, 4, port, hostname);
-        console.log('ack sent!')
     }
 
     initialState() {
