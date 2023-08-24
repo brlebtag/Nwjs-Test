@@ -64,6 +64,7 @@ class ServerScene extends Phaser.Scene {
     }
 
     processData(data) {
+        console.log('ack received');
         const commands = this.commands;
         const size = commands.length;
         if (size <= 0) return;
@@ -81,12 +82,14 @@ class ServerScene extends Phaser.Scene {
         }
 
         commands.skipFront(index + 1);
+        console.log('acked!');
     }
 
     sendCommads() {
         let size = serializeCommands(this.commands, this.buffer);
         if (size <= 0) return;
         this.udpClient.send(this.buffer, 0 , size, udpPort, hostname);
+        console.log('commands sent!');
     }
 
     startServer() {
@@ -104,6 +107,8 @@ class ServerScene extends Phaser.Scene {
             this.udpClient = undefined;
             console.log('UDP closed');
         });
+
+        udpClient.bind(udpPort);
 
         const tcpServer = this.tcpServer = net.createServer({ noDelay: true }, socket => {
             socket.setEncoding(null);
@@ -148,6 +153,6 @@ class ServerScene extends Phaser.Scene {
             console.log('Server TCP disconnected!');
         });
 
-        tcpServer.listen(tcpPort, hostname);
+        tcpServer.listen(tcpPort, '0.0.0.0');
     }
 }

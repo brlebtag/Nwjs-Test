@@ -70,6 +70,7 @@ class ClientScene extends Phaser.Scene {
     }
 
     processData(data) {
+        console.log('commands received');
         let commands = deserializeCommands(data);
 
         if (commands.length <= 0) return;
@@ -80,6 +81,7 @@ class ClientScene extends Phaser.Scene {
 
         const last = commands[commands.length - 1];
         this.lastConfirmed = last.id;
+        console.log('commands processed');
     }
 
     ackCommands() {
@@ -87,7 +89,8 @@ class ClientScene extends Phaser.Scene {
 
         this.buffer.writeInt32BE(this.lastConfirmed, 0);
         /* 32-bits = 4 bytes */
-        this.udpClient.send(this.buffer, 0, 4);
+        this.udpClient.send(this.buffer, 0, 4, udpPort, hostname);
+        console.log('ack sent!')
     }
 
     initialState() {
