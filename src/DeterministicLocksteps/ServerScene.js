@@ -50,8 +50,7 @@ class ServerScene extends Phaser.Scene {
     update(time, delta) {
         if (this.tcpClient) {
             this.hero.clearTint();
-            if (this.commands.full())
-            {
+            if (this.commands.full()) {
                 console.log('commands is full');
                 return;
             }
@@ -63,6 +62,8 @@ class ServerScene extends Phaser.Scene {
         } else {
             this.hero.setTint(0xff0000);
         }
+
+        console.log('loopId: ', this.loopId);
     }
 
     get inputs() {
@@ -73,8 +74,7 @@ class ServerScene extends Phaser.Scene {
         console.log('ack received');
         const commands = this.commands;
         const size = commands.length;
-        if (size <= 0) 
-        {
+        if (size <= 0) {
             console.log('no commands to send');
             return;
         }
@@ -82,8 +82,7 @@ class ServerScene extends Phaser.Scene {
         const first = commands.front();
         const index = loopId - first.id;
         
-        if (index < 0)
-        {
+        if (index < 0) {
             console.log('already acked!')
             return; // Already ACKED. It is from the past or repeated ACK.
         }
@@ -109,68 +108,78 @@ class ServerScene extends Phaser.Scene {
     }
 
     startServer() {
-        const udpClient = this.udpClient = dgram.createSocket('udp4');
+        console.log('setting up connection');
 
-        udpClient.on('connect', () => {
-            console.log('udp client connect');
-        });
-
-        udpClient.on('message', (data, rinfo) => {
-            this.processData(data, rinfo);
-        });
-
-        udpClient.on('error', (err) => {
-            console.log('UDP error: ', err);
-        });
-
-        udpClient.on('close', () => {
-            this.udpClient = undefined;
-            console.log('UDP closed');
-        });
-
-        udpClient.bind(port);
-
-        const tcpServer = this.tcpServer = net.createServer({ noDelay: true }, socket => {
-            socket.setEncoding(null);
-            console.log('Client connected');
-
-            if (this.tcpClient) {
-                socket.end();
-                console.log('Already client connected');
-                return;
-            }
-
-            this.remoteAddress = {address: socket.remoteAddress, port: socket.remotePort};
-            this.loopId = 0;
-            this.commands.reset();
-            this.commands.clear();
-            this.senderTimer.paused = false;
-            this.tcpClient = socket;
-
-            socket.on('ready', () => {
-                console.log('tcp client socket ready!');
+        try {
+            const udpClient = this.udpClient = dgram.createSocket('udp4');
+    
+            udpClient.on('connect', () => {
+                console.log('udp client connect');
             });
-
-            socket.on('close', () => {
-                this.senderTimer.paused = true;
-                this.tcpClient = undefined;
-                this.remoteAddress = null;
-                console.log('Client disconnected');
+    
+            udpClient.on('message', (data, rinfo) => {
+                this.processData(data, rinfo);
             });
-
-            socket.on('error', err => {
-                console.log('TCP error: ', err);
+    
+            udpClient.on('error', (err) => {
+                console.log('UDP error: ', err);
             });
-        });
+    
+            udpClient.on('close', () => {
+                this.udpClient = undefined;
+                console.log('UDP closed');
+            });
+    
+            udpClient.bind(port, () => {
+                console.log('udp client binded!')
+            });
+    
+            const tcpServer = this.tcpServer = net.createServer({ noDelay: true }, socket => {
+                socket.setEncoding(null);
+                console.log('Client connected');
+    
+                if (this.tcpClient) {
+                    socket.end();
+                    console.log('Already client connected');
+                    return;
+                }
+    
+                this.remoteAddress = {address: socket.remoteAddress, port: socket.remotePort};
+                this.loopId = 0;
+                this.commands.reset();
+                this.commands.clear();
+                this.senderTimer.paused = false;
+                this.tcpClient = socket;
+    
+                socket.on('ready', () => {
+                    console.log('tcp client socket ready!');
+                });
+    
+                socket.on('close', () => {
+                    this.senderTimer.paused = true;
+                    this.tcpClient = undefined;
+                    this.remoteAddress = null;
+                    console.log('Client disconnected');
+                });
+    
+                socket.on('error', err => {
+                    console.log('TCP error: ', err);
+                });
+            });
+    
+            tcpServer.on('ready', () => {
+                console.log('tcp server socket ready!');
+            });
+    
+            tcpServer.on('close', () => {
+                console.log('Server TCP disconnected!');
+            });
+    
+            tcpServer.listen(port, hostname);
 
-        tcpServer.on('ready', () => {
-            console.log('tcp server socket ready!');
-        });
-
-        tcpServer.on('close', () => {
-            console.log('Server TCP disconnected!');
-        });
-
-        tcpServer.listen(port, hostname);
+            console.log('set up connection');
+        } catch (err) {
+            console.log('err: ', err);
+        }
     }
 }

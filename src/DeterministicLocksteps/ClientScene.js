@@ -80,14 +80,15 @@ class ClientScene extends Phaser.Scene {
             console.log('commands received');
             let commands = deserializeCommands(data);
     
-            if (commands.length <= 0)
-            {
+            if (commands.length <= 0) {
                 console.log('unable to deserialize!');
                 return;
             }
     
             for (const cmd of commands) {
-                this.commands.push(cmd);
+                if (cmd.id >= this.loopId++) {
+                    this.commands.push(cmd);
+                }
             }
     
             const last = commands[commands.length - 1];
@@ -100,8 +101,7 @@ class ClientScene extends Phaser.Scene {
 
     ackCommands() {
         try {
-            if (this.lastConfirmed == -1)
-            {
+            if (this.lastConfirmed == -1) {
                 console.log('no command acked!');
                 return;
             }
@@ -144,44 +144,56 @@ class ClientScene extends Phaser.Scene {
     }
 
     connectToServer() {
-        const udpClient = this.udpClient = dgram.createSocket('udp4');
+        console.log('setting up connection');
 
-        udpClient.on('connect', () => {
-            console.log('udp client connect');
-        });
+        try {
+            const udpClient = this.udpClient = dgram.createSocket('udp4');
 
-        udpClient.on('message', (data, rinfo) => {
-            this.processData(data, rinfo);
-        });
-
-        udpClient.on('error', (err) => {
-            console.log('UDP error: ', err);
-        });
-
-        udpClient.on('close', () => {
-            this.udpClient = undefined;
-            console.log('UDP closed');
-        });
-
-        const tcpClient = this.tcpClient = net.Socket();
-
-        tcpClient.connect({ port: port, host: hostname, noDelay: false });
-
-        tcpClient.on('ready', () => {
-            console.log('tcp socket ready!');
-        });
-
-        tcpClient.on('close', () => {
-            this.tcpClient = undefined;
-            this.endState();
-            console.log('Server TCP disconnected!');
-        });
-
-        tcpClient.on('connect', () => {
-            udpClient.bind(tcpClient.address().port, () => {
-                this.initialState();
-                console.log(`udp socket binded`);
+            udpClient.on('connect', () => {
+                console.log('udp client connect');
             });
-        })
+    
+            udpClient.on('message', (data, rinfo) => {
+                this.processData(data, rinfo);
+            });
+    
+            udpClient.on('error', (err) => {
+                console.log('UDP error: ', err);
+            });
+    
+            udpClient.on('close', () => {
+                this.udpClient = undefined;
+                console.log('UDP closed');
+            });
+    
+            const tcpClient = this.tcpClient = net.Socket();
+    
+            tcpClient.connect({ port: port, host: hostname, noDelay: false });
+    
+            tcpClient.on('ready', () => {
+                console.log('tcp socket ready!');
+            });
+    
+            tcpClient.on('close', () => {
+                this.tcpClient = undefined;
+                this.endState();
+                console.log('Server TCP disconnected!');
+            });
+    
+            tcpClient.on('connect', () => {
+                try {
+                    udpClient.bind(tcpClient.address().port, () => {
+                        this.initialState();
+                        console.log(`udp socket binded`);
+                    });
+                } catch (err) {
+                    console.log('err: ', err);
+                }
+            });
+
+            console.log('set up connection');
+        } catch (err) {
+            console.log('err: ', err);
+        }
     }
 }
