@@ -68,7 +68,6 @@ class ClientScene extends Phaser.Scene {
         } else {
             this.hero.setTint(0xff0000);
         }
-        
     }
 
     get inputs() {
@@ -76,6 +75,10 @@ class ClientScene extends Phaser.Scene {
     }
 
     processData(data, rinfo) {
+        if (!this.isConnected) {
+            console.log('cant process data because it is disconnected');
+        }
+
         try {
             console.log('commands received');
             let commands = deserializeCommands(data);
@@ -89,6 +92,7 @@ class ClientScene extends Phaser.Scene {
                 if (cmd.id >= this.loopId++) {
                     this.commands.push(cmd);
                 }
+                console.log(this.commands);
             }
     
             const last = commands[commands.length - 1];
@@ -100,6 +104,10 @@ class ClientScene extends Phaser.Scene {
     }
 
     ackCommands() {
+        if (!this.isConnected) {
+            console.log('cant ack data because it is disconnected');
+        }
+
         try {
             if (this.lastConfirmed == -1) {
                 console.log('no command acked!');
@@ -182,9 +190,11 @@ class ClientScene extends Phaser.Scene {
     
             tcpClient.on('connect', () => {
                 try {
+                    console.log('Binding udp to ', tcpClient.address().port);
+
                     udpClient.bind(tcpClient.address().port, () => {
                         this.initialState();
-                        console.log(`udp socket binded`);
+                        console.log('udp socket binded');
                     });
                 } catch (err) {
                     console.log('err: ', err);

@@ -63,7 +63,7 @@ class ServerScene extends Phaser.Scene {
             this.hero.setTint(0xff0000);
         }
 
-        console.log('loopId: ', this.loopId);
+        // console.log('loopId: ', this.loopId);
     }
 
     get inputs() {
@@ -72,6 +72,10 @@ class ServerScene extends Phaser.Scene {
 
     processData(data, rinfo) {
         console.log('ack received');
+        if (!this.tcpClient) {
+            console.log('cant ack data because it is disconnected');
+            return;
+        }
         const commands = this.commands;
         const size = commands.length;
         if (size <= 0) {
@@ -99,7 +103,11 @@ class ServerScene extends Phaser.Scene {
     }
 
     sendCommads() {
-        if (!this.tcpClient) return;
+        if (!this.tcpClient) {
+            console.log(`cant send commands because it is disconnected`);
+            return;
+        }
+        
         const client = this.remoteAddress;
         let size = serializeCommands(this.commands, this.buffer);
         if (size <= 0) return;
