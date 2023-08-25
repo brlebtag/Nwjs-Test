@@ -115,6 +115,21 @@ class ServerScene extends Phaser.Scene {
         console.log('commands sent!');
     }
 
+    initializeClient(socket) {
+        console.log('initializeClient');
+        try {
+            this.hero.body.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
+            this.remoteAddress = {address: socket.remoteAddress, port: socket.remotePort};
+            this.loopId = 0;
+            this.commands.reset();
+            this.commands.clear();
+            this.senderTimer.paused = false;
+            this.tcpClient = socket;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     startServer() {
         console.log('setting up connection');
 
@@ -152,13 +167,7 @@ class ServerScene extends Phaser.Scene {
                     return;
                 }
     
-                this.hero.body.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
-                this.remoteAddress = {address: socket.remoteAddress, port: socket.remotePort};
-                this.loopId = 0;
-                this.commands.reset();
-                this.commands.clear();
-                this.senderTimer.paused = false;
-                this.tcpClient = socket;
+                this.initializeClient(socket);
     
                 socket.on('ready', () => {
                     console.log('tcp client socket ready!');

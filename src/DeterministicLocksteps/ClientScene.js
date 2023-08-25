@@ -78,7 +78,6 @@ class ClientScene extends Phaser.Scene {
     processData(data, rinfo) {
         if (!this.isConnected) {
             console.log('cant process data because it is disconnected');
-            this.forceDisconnect();
             return;
         }
 
@@ -112,7 +111,6 @@ class ClientScene extends Phaser.Scene {
     ackCommands() {
         if (!this.isConnected) {
             console.log('cant ack data because it is disconnected');
-            this.forceDisconnect();
             return;
         }
 
@@ -151,6 +149,7 @@ class ClientScene extends Phaser.Scene {
             this.tcpClient.end(); // close
         }
 
+        this.isConnected = false;
         this.senderTimer.paused = true;
     }
 
@@ -193,6 +192,7 @@ class ClientScene extends Phaser.Scene {
     
             tcpClient.on('close', () => {
                 this.tcpClient = undefined;
+                this.isConnected = false;
                 this.endState();
                 console.log('Server TCP disconnected!');
             });
