@@ -186,7 +186,7 @@ class ClientScene extends Phaser.Scene {
             tcpClient.connect({ port: port, host: hostname, noDelay: false });
     
             tcpClient.on('ready', () => {
-                this.hero.body.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
+                this.hero.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
                 console.log('tcp socket ready!');
             });
     

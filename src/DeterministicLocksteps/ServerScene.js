@@ -118,7 +118,7 @@ class ServerScene extends Phaser.Scene {
     initializeClient(socket) {
         console.log('initializeClient');
         try {
-            this.hero.body.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
+            this.hero.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
             this.remoteAddress = {address: socket.remoteAddress, port: socket.remotePort};
             this.loopId = 0;
             this.commands.reset();
