@@ -35,7 +35,7 @@ class ServerScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
         this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels);
         this.obstaclesLayer = obstaclesLayer;
-        this.hero = new Hero(this, 50, 50, 'Bruno');
+        this.hero = new Hero(this, HeroInitalPosition.x, HeroInitalPosition.y, 'Bruno');
         this.cameras.main.startFollow(this.hero, true);
         this.physics.add.collider(this.hero, obstaclesLayer);
         this.senderTimer = this.time.addEvent({
@@ -152,6 +152,7 @@ class ServerScene extends Phaser.Scene {
                     return;
                 }
     
+                this.hero.body.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
                 this.remoteAddress = {address: socket.remoteAddress, port: socket.remotePort};
                 this.loopId = 0;
                 this.commands.reset();

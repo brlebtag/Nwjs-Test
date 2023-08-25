@@ -37,7 +37,7 @@ class ClientScene extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, widthInPixels, heightInPixels);
         this.cameras.main.setBounds(0, 0, widthInPixels, heightInPixels);
         this.obstaclesLayer = obstaclesLayer;
-        this.hero = new Hero(this, 50, 50, 'Bruno');
+        this.hero = new Hero(this, HeroInitalPosition.x, HeroInitalPosition.y, 'Bruno');
         this.cameras.main.startFollow(this.hero, true);
         this.physics.add.collider(this.hero, obstaclesLayer);
         this.senderTimer = this.time.addEvent({
@@ -58,6 +58,7 @@ class ClientScene extends Phaser.Scene {
             }
             this.loopId++;
             const cmd = this.commands.shift(); // remove from front
+            console.log('consumed: ', cmd.id);
             if (!cmd || this.loopId != cmd.id) {
                 console.error('Out-of-sync state...', cmd.id, '!=', this.loopId);
                 this.forceDisconnect();
@@ -77,6 +78,8 @@ class ClientScene extends Phaser.Scene {
     processData(data, rinfo) {
         if (!this.isConnected) {
             console.log('cant process data because it is disconnected');
+            this.forceDisconnect();
+            return;
         }
 
         try {
@@ -89,11 +92,14 @@ class ClientScene extends Phaser.Scene {
             }
     
             for (const cmd of commands) {
-                if (cmd.id >= this.loopId++) {
+                if (cmd.id > this.lastConfirmed) {
                     this.commands.push(cmd);
-                }
-                console.log(this.commands);
+                }/* else {
+                    console.log('discarded ', cmd.id, '<', this.loopId);
+                }*/
             }
+
+            // console.log(commands, [...this.commands._storage]);
     
             const last = commands[commands.length - 1];
             this.lastConfirmed = last.id;
@@ -106,6 +112,8 @@ class ClientScene extends Phaser.Scene {
     ackCommands() {
         if (!this.isConnected) {
             console.log('cant ack data because it is disconnected');
+            this.forceDisconnect();
+            return;
         }
 
         try {
@@ -179,6 +187,7 @@ class ClientScene extends Phaser.Scene {
             tcpClient.connect({ port: port, host: hostname, noDelay: false });
     
             tcpClient.on('ready', () => {
+                this.hero.body.setPosition(HeroInitalPosition.x, HeroInitalPosition.y);
                 console.log('tcp socket ready!');
             });
     
