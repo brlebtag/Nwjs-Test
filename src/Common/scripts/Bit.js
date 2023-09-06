@@ -102,11 +102,10 @@ function readBits(cursor, numBits) {
 function moveCursorNBits(cursor, n) {
     if ((cursorUsedSize(cursor) + n) > cursorSize(cursor))
         throw `Unable to read ${n}`;
-
+    cursor.bytes += Math.floor(n / 8);
     if ((cursor.bits -= n) < 0) {
 		cursor.bits = 8 - ((-cursor.bits) % 8);
-		cursor.bytes += Math.floor(cursor.bits / 8);
-	}
+    }
 }
 
 function moveCursor1Bit(cursor) {
